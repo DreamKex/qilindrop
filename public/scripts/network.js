@@ -400,7 +400,88 @@ class PeersManager {
     }
 
     _onFilesSelected(message) {
-        this.peers[message.to].sendFiles(message.files);
+        window.logger.info("connect status : " + this._server._isConnected());
+        window.logger.info("send files to : " + message.to);
+        window.logger.info("peer status : " + this.peers[message.to]._isConnected());
+
+        // 创建文件对象的副本，防止垃圾回收
+        const filesToSend = Array.from(message.files);
+
+        // 确保服务器连接已建立
+        const ensureServerConnection = () => {
+            return new Promise((resolve) => {
+                if (this._server._isConnected()) {
+                    window.logger.info("Server already connected");
+                    resolve();
+                    return;
+                }
+
+                window.logger.info("Connecting to server...");
+                this._server._connect();
+
+                // 轮询检查连接状态
+                const checkConnection = () => {
+                    if (this._server._isConnected()) {
+                        window.logger.info("Server connected successfully");
+                        resolve();
+                    } else if (this._server._isConnecting()) {
+                        setTimeout(checkConnection, 100);
+                    } else {
+                        // 如果连接失败，重试
+                        window.logger.info("Server connection failed, retrying...");
+                        this._server._connect();
+                        setTimeout(checkConnection, 100);
+                    }
+                };
+
+                checkConnection();
+            });
+        };
+
+        // 确保对等连接已建立
+        const ensurePeerConnection = () => {
+            return new Promise((resolve) => {
+                const peer = this.peers[message.to];
+                if (peer._isConnected()) {
+                    window.logger.info("Peer already connected");
+                    resolve();
+                    return;
+                }
+
+                window.logger.info("Connecting to peer...");
+                peer.refresh();
+
+                // 轮询检查对等连接状态
+                const checkPeerConnection = () => {
+                    if (peer._isConnected()) {
+                        window.logger.info("Peer connected successfully");
+                        resolve();
+                    } else if (peer._isConnecting()) {
+                        setTimeout(checkPeerConnection, 100);
+                    } else {
+                        // 如果连接失败，重试
+                        window.logger.info("Peer connection failed, retrying...");
+                        peer.refresh();
+                        setTimeout(checkPeerConnection, 100);
+                    }
+                };
+
+                checkPeerConnection();
+            });
+        };
+
+        // 先确保服务器连接，再确保对等连接，最后发送文件
+        ensureServerConnection()
+            .then(ensurePeerConnection)
+            .then(() => {
+                window.logger.info("All connections established, sending files...");
+                this.peers[message.to].sendFiles(filesToSend);
+                filesToSend = null; // 显式释放引用，帮助垃圾回收
+            })
+            .catch(error => {
+                window.logger.error("Failed to establish connections: " + error);
+                Events.fire('notify-user', '连接失败，无法发送文件');
+            });
     }
 
     _onSendText(message) {
