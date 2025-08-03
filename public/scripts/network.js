@@ -405,7 +405,7 @@ class PeersManager {
         window.logger.info("peer status : " + this.peers[message.to]._isConnected());
 
         // 创建文件对象的副本，防止垃圾回收
-        const filesToSend = Array.from(message.files);
+        let filesToSend = Array.from(message.files);
 
         // 确保服务器连接已建立
         const ensureServerConnection = () => {
