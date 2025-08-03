@@ -78,6 +78,136 @@ header {
 }
 
 
+/* Log Viewer */
+.log-viewer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 350px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    font-family: monospace;
+    resize: horizontal;
+    overflow: auto;
+    min-width: 250px;
+    max-width: 80%;
+}
+
+.resize-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: transparent;
+    cursor: ew-resize;
+    z-index: 101;
+}
+
+.resize-handle:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* 在移动端隐藏拖拽手柄 */
+@media (max-width: 768px) {
+    .resize-handle {
+        display: none;
+    }
+    .log-viewer {
+        resize: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .log-viewer {
+        width: 100%;
+        height: 80%;
+        top: 20%;
+        max-width: 100%;
+    }
+}
+
+.log-header {
+    padding: 10px 15px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.log-title {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.log-button {
+    min-width: auto;
+    padding: 5px 10px;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.log-content {
+    flex-grow: 1;
+    overflow: hidden;
+    display: none;
+}
+
+.log-text {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.log-toggle-btn {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    z-index: 101;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .log-toggle-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 12px;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .log-viewer {
+        background: rgba(30, 30, 30, 0.95);
+        color: #eee;
+    }
+    .log-header {
+        background: #444;
+        border-bottom: 1px solid #555;
+    }
+}
+
 /* Typography */
 
 body {
@@ -497,6 +627,18 @@ button::-moz-focus-inner {
     min-height: 40px;
     line-height: 16px;
     max-height: 300px;
+}
+
+/* Fix for mobile touch targets */
+@media (max-width: 768px) {
+    .button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    .icon-button {
+        width: 44px;
+        height: 44px;
+    }
 }
 
 
