@@ -4,6 +4,18 @@ window.isRtcSupported = !!(window.RTCPeerConnection || window.mozRTCPeerConnecti
 class ServerConnection {
 
     constructor() {
+        // 尝试从本地存储获取客户端标识
+        this._clientId = localStorage.getItem('qilindrop_client_id');
+        if (!this._clientId) {
+            // 如果没有，生成一个随机标识
+            this._clientId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('qilindrop_client_id', this._clientId);
+        }
+        // 设置cookie，让服务器能够在初始连接时获取clientId
+        // 根据当前协议决定是否添加 Secure 属性
+        const secureAttr = location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `clientId=${this._clientId}; SameSite=Strict; Max-Age=300${secureAttr}`;
+
         this._connect();
         Events.on('beforeunload', e => this._disconnect());
         Events.on('pagehide', e => this._disconnect());

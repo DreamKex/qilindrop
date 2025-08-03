@@ -83,9 +83,18 @@ class SnapdropServer {
     }
 
     _onHeaders(headers, response) {
-        if (response.headers.cookie && response.headers.cookie.indexOf('peerid=') > -1) return;
-        response.peerId = Peer.uuid();
-        headers.push('Set-Cookie: peerid=' + response.peerId + "; SameSite=Strict; Max-Age=3600; Secure");
+        // 检查客户端是否已经提供了clientId
+        if (response.headers.cookie && response.headers.cookie.indexOf('clientId=') > -1) {
+            // 提取clientId作为peerId
+            const match = response.headers.cookie.match(/clientId=([^;]+)/);
+            if (match && match[1]) {
+                response.peerId = match[1];
+                return;
+            }
+        }
+        // 如果没有clientId，则生成一个新的
+        //response.peerId = Peer.uuid();
+        //headers.push('Set-Cookie: peerid=' + response.peerId + "; SameSite=Strict; Max-Age=3600; Secure");
     }
 
     _onMessage(sender, message) {
@@ -245,10 +254,39 @@ class Peer {
     }
 
     _setPeerId(request) {
-        if (request.peerId) {
+        // 尝试从cookie中获取clientId
+        let clientId = null;
+        if (request.headers.cookie) {
+            const match = request.headers.cookie.match(/clientId=([^;]+)/);
+            if (match && match[1]) {
+                clientId = match[1];
+            }
+        }
+
+        console.log('clientId from cookie:', clientId);
+        console.log('peerIdFromRequest:', request.peerId);
+        console.log('peerid from cookie:', request.headers.cookie && request.headers.cookie.indexOf('peerid=') > -1 ? request.headers.cookie.replace('peerid=', '').split(';')[0] : null);
+
+        // 优先使用clientId
+        if (clientId) {
+            this.id = clientId;
+            console.log('Using clientId from cookie:', this.id);
+            return;
+        }
+        // 如果没有clientId，则使用request.peerId
+        else if (request.peerId) {
             this.id = request.peerId;
-        } else {
-            this.id = request.headers.cookie.replace('peerid=', '');
+            console.log('Using peerIdFromRequest:', this.id);
+        } 
+        // 回退到旧的peerid机制
+//        else if (request.headers.cookie && request.headers.cookie.indexOf('peerid=') > -1) {
+//            this.id = request.headers.cookie.replace('peerid=', '').split(';')[0];
+//            console.log('Using peerid from cookie:', this.id);
+//        }
+         else {
+            // 如果没有任何标识，生成一个新的
+            this.id = Peer.uuid();
+            console.log('Generating new peerId:', this.id);
         }
     }
 
