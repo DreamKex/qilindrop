@@ -169,6 +169,11 @@ header {
     white-space: pre-wrap;
 }
 
+/* 控制按钮显示状态的CSS类 */
+.log-toggle-btn-hidden {
+    display: none !important;
+}
+
 .log-toggle-btn {
     position: fixed;
     top: 60px;
