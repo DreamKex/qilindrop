@@ -33,11 +33,35 @@ const app = express();
 const port = process.env.PORT || 3000;
 const publicRun = process.argv[2];
 
+// 读取日志按钮可见性环境变量
+const logButtonVisible = process.env.LOG_BUTTON_VISIBLE==='true'; // 只要环境变量有值就开启
+console.log('Log button visible:', logButtonVisible);
+
 app.get('*', (req, res) => {
     const file = path.join(__dirname, 'public', req.url);
     fs.stat(file, function (err, stat) {
         if (!err && stat.isFile()) { //是文件
-            res.sendFile(file);
+            // 特殊处理styles.css文件
+            if (logButtonVisible && req.url === '/styles.css') {
+                fs.readFile(file, 'utf8', function(readErr, data) {
+                    if (readErr) {
+                        res.status(500).send('Error reading styles.css');
+                        return;
+                    }
+                    
+                    // 根据环境变量决定是否添加显示日志按钮的样式
+                    let modifiedContent = data;
+                    const showStyle = '\n.log-toggle-btn-show {display: flex !important;} /* 系统自动追加，查看index.js */';
+                    
+                    // 如果允许显示日志，则添加显示类的样式
+                    modifiedContent += showStyle;
+                    
+                    res.set('Content-Type', 'text/css');
+                    res.send(modifiedContent);
+                });
+            } else {
+                res.sendFile(file);
+            }
             return;
         }
         if (/^\/[^\/]*\//.test(req.url)) { //如果字符串中包含了两个或以上的斜杆

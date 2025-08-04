@@ -169,11 +169,6 @@ header {
     white-space: pre-wrap;
 }
 
-/* 控制按钮显示状态的CSS类 */
-.log-toggle-btn-hidden {
-    display: none !important;
-}
-
 .log-toggle-btn {
     position: fixed;
     top: 60px;
@@ -188,7 +183,7 @@ header {
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
 }
@@ -933,3 +928,4 @@ x-dialog x-paper {
     font-size: 14px;
     display: none;
 }
+

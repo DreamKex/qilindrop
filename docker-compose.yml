@@ -1,0 +1,19 @@
+version: '3'
+
+# 定义qilindrop服务
+
+services:
+  qilindrop:
+    # 从当前目录的dockerfile构建镜像
+    build:
+      context: .
+      dockerfile: dockerfile
+    # 映射容器的3000端口到主机的3000端口
+    ports:
+      - "3000:3000"
+    # 设置环境变量
+    environment:
+      - NODE_ENV=production
+    # 容器退出时自动重启
+    restart: unless-stopped
+    # 使用dockerfile中定义的CMD命令启动

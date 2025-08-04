@@ -38,5 +38,6 @@ Enter a blank room name to return to LAN mode.
 
 ## 修改内容清单
 1. 修复移动端浏览器，选择文件造成通讯中断问题
-2. 增加页面日志查看器，如要使用在修改<mcfile name="styles.css" path="d:/tmp/gen/qilindrop/public/styles.css"></mcfile>中第173-175行样式即可使用
+2. 增加页面日志查看器
 3. 修复via浏览其中加载慢问题
+4. 修改日志查看器开关通过环境变量控制，环境变量中增加`LOG_BUTTON_VISIBLE=true`即可开启
