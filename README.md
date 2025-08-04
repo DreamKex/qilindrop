@@ -41,3 +41,4 @@ Enter a blank room name to return to LAN mode.
 2. 增加页面日志查看器
 3. 修复via浏览其中加载慢问题
 4. 修改日志查看器开关通过环境变量控制，环境变量中增加`LOG_BUTTON_VISIBLE=true`即可开启
+5. 修复了设备名称生成数组越界造成undefined问题
