@@ -20,7 +20,7 @@ Math.seededRandom = function (max, min) {
 
 function getName(seed) {
     var familyNames = new Array(
-        '勇敢的', '聪明的', '好动的', '好学的', '敏捷的', '开心的', '可爱的', '睿智的', '强大的', '冷静的', '幸运的', '优雅的', '幽默的'
+        '勇敢的', '聪明的', '好动的', '好学的', '敏捷的', '开心的', '可爱的', '睿智的', '强大的', '冷静的', '幸运的', '优雅的', '幽默的', '帅气的'
     );
     var midNames = new Array(
         '色', '的'
@@ -29,9 +29,10 @@ function getName(seed) {
         '钢铁侠', '雷神', '绿巨人', '鹰眼', '黑寡妇', '蜘蛛侠', '蝙蝠侠', '神奇博士', '蚁人', '星爵', '美国队长', '惊奇队长', '佩奇', '威廉', '麒麟'
     );
     Math.seed = seed.hashCode();
-    var familyName = familyNames[Math.seededRandom(14, 0)];
-    var midName = midNames[Math.seededRandom(2, 0)];
-    var givenName = givenNames[Math.seededRandom(15, 0)];
+    // 使用数组长度作为随机数上限，确保不会越界
+    var familyName = familyNames[Math.seededRandom(familyNames.length, 0)];
+    var midName = midNames[Math.seededRandom(midNames.length, 0)];
+    var givenName = givenNames[Math.seededRandom(givenNames.length, 0)];
     var fullName = familyName + givenName;
     if (fullName && fullName.length < 2) fullName = '幸福的威廉与佩奇';
 
