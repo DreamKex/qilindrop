@@ -26,17 +26,26 @@ self.addEventListener('install', function(event) {
 
 
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
+    // 检查请求的host是否与当前页面的host相同
+    const requestHost = new URL(event.request.url).host;
+    const currentHost = self.location.host;
+    if (requestHost === currentHost) {
+      event.respondWith(
+        caches.match(event.request)
+          .then(function(response) {
+            // Cache hit - return response
+            if (response) {
+              return response;
+            }
+            return fetch(event.request);
+          }
+        )
+      );
+    } else {
+      event.respondWith(
+        ()=>{return fetch(event.request)}
+      );
+    }
 });
 
 
